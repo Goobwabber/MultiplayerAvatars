@@ -48,7 +48,7 @@ namespace MultiplayerAvatars.Avatars
 
             _sessionManager.connectedEvent += SendLocalAvatarPacket;
             _sessionManager.playerConnectedEvent += OnPlayerConnected;
-            _serializer.RegisterCallback<CustomAvatarPacket>(HandleAvatarPacket);
+            _serializer.RegisterCallback(HandleAvatarPacket, CustomAvatarPacket.pool.Obtain);
 
             OnAvatarChanged(_avatarManager.currentlySpawnedAvatar);
             localAvatar.floor = _floorController.floorPosition;

@@ -8,16 +8,22 @@ using System.Threading.Tasks;
 
 namespace MultiplayerAvatars.Avatars
 {
-    public class CustomAvatarPacket : CustomPacket<CustomAvatarPacket>
+    public class CustomAvatarPacket : INetSerializable, IPoolablePacket
     {
-        public override void Serialize(NetDataWriter writer)
+        public static PacketPool<CustomAvatarPacket> pool => ThreadStaticPacketPool<CustomAvatarPacket>.pool;
+        public void Release()
+        {
+            CustomAvatarPacket.pool.Release(this);
+        }
+
+        public void Serialize(NetDataWriter writer)
         {
             writer.Put(hash);
             writer.Put(scale);
             writer.Put(floor);
         }
 
-        public override void Deserialize(NetDataReader reader)
+        public void Deserialize(NetDataReader reader)
         {
             hash = reader.GetString();
             scale = reader.GetFloat();
