@@ -54,7 +54,12 @@ namespace MultiplayerAvatars.Avatars
             localAvatar.floor = _floorController.floorPosition;
         }
 
-        public CustomAvatarData GetAvatarByUserId(string userId) => _avatars[userId];
+        public CustomAvatarData? GetAvatarByUserId(string userId)
+        {
+            if (_avatars.ContainsKey(userId))
+                return _avatars[userId];
+            return null;
+        }
 
         private void OnAvatarChanged(SpawnedAvatar avatar)
         {

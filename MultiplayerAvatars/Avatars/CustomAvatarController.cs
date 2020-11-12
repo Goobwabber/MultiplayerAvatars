@@ -46,7 +46,9 @@ namespace MultiplayerAvatars.Avatars
             if(poseControllers.Length != 0)
             {
                 poseController = poseControllers.First();
-                OnAvatarReceived(_connectedPlayer, _customAvatarManager.GetAvatarByUserId(_connectedPlayer.userId));
+                CustomAvatarData avatar = _customAvatarManager.GetAvatarByUserId(_connectedPlayer.userId);
+                if (avatar != null)
+                    OnAvatarReceived(_connectedPlayer, avatar);
             }
         }
 
