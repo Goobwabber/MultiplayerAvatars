@@ -1,1 +1,2 @@
-MultiplayerAvatars
+# MultiplayerAvatars (PC Only)
+A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) support to the [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) mod. **This is a work in progress which has bugs.**
