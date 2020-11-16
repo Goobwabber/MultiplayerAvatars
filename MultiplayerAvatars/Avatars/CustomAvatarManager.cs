@@ -10,32 +10,27 @@ namespace MultiplayerAvatars.Avatars
 {
     class CustomAvatarManager : IInitializable
     {
-        [Inject]
-        private IMultiplayerSessionManager _sessionManager;
+        private readonly PacketManager _packetManager;
+        private readonly FloorController _floorController;
+        private readonly PlayerAvatarManager _avatarManager;
+        private readonly IMultiplayerSessionManager _sessionManager;
+        private readonly IAvatarProvider<LoadedAvatar> _avatarProvider;
 
-        [Inject]
-        private PacketManager _packetManager;
 
-        [Inject]
-        private AvatarSpawner _avatarSpawner;
-
-        [Inject]
-        private PlayerAvatarManager _avatarManager;
-
-        [Inject]
-        private VRPlayerInput _playerInput;
-
-        [Inject]
-        private FloorController _floorController;
-
-        [Inject]
-        private IAvatarProvider<LoadedAvatar> _avatarProvider;
-
-        private PacketSerializer _serializer = new PacketSerializer();
-
-        public Action<IConnectedPlayer, CustomAvatarData> avatarReceived;
         public CustomAvatarData localAvatar = new CustomAvatarData();
-        private Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
+        public Action<IConnectedPlayer, CustomAvatarData> avatarReceived;
+        private readonly PacketSerializer _serializer = new PacketSerializer();
+        private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
+
+        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager,
+                                     IMultiplayerSessionManager sessionManager, IAvatarProvider<LoadedAvatar> avatarProvider)
+        {
+            _packetManager = packetManager;
+            _avatarManager = avatarManager;
+            _sessionManager = sessionManager;
+            _avatarProvider = avatarProvider;
+            _floorController = floorController;
+        }
 
         public void Initialize()
         {
@@ -88,6 +83,11 @@ namespace MultiplayerAvatars.Avatars
             Plugin.Log?.Info($"Received 'CustomAvatarPacket' from '{player.userId}' with '{packet.hash}'");
             _avatars[player.userId] = new CustomAvatarData(packet);
             avatarReceived?.Invoke(player, _avatars[player.userId]);
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }
