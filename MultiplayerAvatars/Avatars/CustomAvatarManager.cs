@@ -1,14 +1,13 @@
-﻿using CustomAvatar.Avatar;
-using CustomAvatar.Player;
-using MultiplayerExtensions.Packets;
-using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System;
 using Zenject;
+using CustomAvatar.Avatar;
+using CustomAvatar.Player;
+using System.Collections.Generic;
+using MultiplayerExtensions.Packets;
 
 namespace MultiplayerAvatars.Avatars
 {
-    class CustomAvatarManager : IInitializable
+    internal class CustomAvatarManager : IInitializable, IDisposable
     {
         private readonly PacketManager _packetManager;
         private readonly FloorController _floorController;
@@ -18,12 +17,11 @@ namespace MultiplayerAvatars.Avatars
 
 
         public CustomAvatarData localAvatar = new CustomAvatarData();
-        public Action<IConnectedPlayer, CustomAvatarData> avatarReceived;
+        public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
         private readonly PacketSerializer _serializer = new PacketSerializer();
         private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
 
-        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager,
-                                     IMultiplayerSessionManager sessionManager, IAvatarProvider<LoadedAvatar> avatarProvider)
+        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<LoadedAvatar> avatarProvider)
         {
             _packetManager = packetManager;
             _avatarManager = avatarManager;
@@ -38,8 +36,8 @@ namespace MultiplayerAvatars.Avatars
             _packetManager.RegisterSerializer(_serializer);
 
             _avatarManager.avatarChanged += OnAvatarChanged;
-            _avatarManager.avatarScaleChanged += delegate(float scale) { localAvatar.scale = scale; };
-            _floorController.floorPositionChanged += delegate (float floor) { localAvatar.floor = floor; };
+            _avatarManager.avatarScaleChanged += SetAvatarScale;
+            _floorController.floorPositionChanged += SetAvatarFloorPosition;
 
             _sessionManager.connectedEvent += SendLocalAvatarPacket;
             _sessionManager.playerConnectedEvent += OnPlayerConnected;
@@ -47,6 +45,27 @@ namespace MultiplayerAvatars.Avatars
 
             OnAvatarChanged(_avatarManager.currentlySpawnedAvatar);
             localAvatar.floor = _floorController.floorPosition;
+        }
+
+        public void Dispose()
+        {
+            _avatarManager.avatarChanged -= OnAvatarChanged;
+            _avatarManager.avatarScaleChanged -= SetAvatarScale;
+            _floorController.floorPositionChanged -= SetAvatarFloorPosition;
+
+            _sessionManager.connectedEvent -= SendLocalAvatarPacket;
+            _sessionManager.playerConnectedEvent -= OnPlayerConnected;
+            _serializer.UnregisterCallback<CustomAvatarPacket>();
+        }
+
+        private void SetAvatarScale(float scale)
+        {
+            localAvatar.scale = scale;
+        }
+
+        private void SetAvatarFloorPosition(float floor)
+        {
+            localAvatar.floor = floor;
         }
 
         public CustomAvatarData? GetAvatarByUserId(string userId)
@@ -83,11 +102,6 @@ namespace MultiplayerAvatars.Avatars
             Plugin.Log?.Info($"Received 'CustomAvatarPacket' from '{player.userId}' with '{packet.hash}'");
             _avatars[player.userId] = new CustomAvatarData(packet);
             avatarReceived?.Invoke(player, _avatars[player.userId]);
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }
