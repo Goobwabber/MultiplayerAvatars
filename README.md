@@ -18,7 +18,7 @@ MultiplayerAvatars has not been released yet, but you can grab the latest build 
 ## Requirements
 Mods without a link can be downloaded from [BeatMods](https://beatmods.com/#/mods) or using Mod Assistant. **Do NOT use any of the DLLs in the `Refs` folder, they have been stripped of code and will not work.**
 * [BeatSaberCustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) 5.0.3+
-* [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) 
+* [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) 0.2.0+
 * SiraUtil 2.1.0+
 
 ## Contributing
