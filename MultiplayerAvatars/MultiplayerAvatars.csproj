@@ -182,7 +182,24 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="BeforeBuild" Condition="'$(NCRUNCH)' != '1'">
+    <Error Text="The BeatSaberModdingTools.Tasks nuget package doesn't seem to be installed." Condition="'$(BSMTTaskAssembly)' == ''" />
+    <GetCommitInfo ProjectDir="$(ProjectDir)">
+      <Output TaskParameter="CommitHash" PropertyName="CommitHash" />
+      <Output TaskParameter="Branch" PropertyName="GitBranch" />
+      <Output TaskParameter="IsPullRequest" PropertyName="IsPullRequest" />
+      <Output TaskParameter="Modified" PropertyName="GitModified" />
+      <Output TaskParameter="GitUser" PropertyName="GitUser" />
+    </GetCommitInfo>
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' AND '$(GitUser)' == 'Goobwabber' AND '$(IsPullRequest)' != 'true'">
+      <VersionType>Official</VersionType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(GitModified)' != 'Modified'">
+      <InformationalVersion>$(VersionType)-$(GitBranch)-$(CommitHash)</InformationalVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(GitModified)' == 'Modified'">
+      <InformationalVersion>$(VersionType)-$(GitBranch)-$(CommitHash)-$(GitModified)</InformationalVersion>
+    </PropertyGroup>
+    <Message Text="Version $(InformationalVersion)" Importance="high" />
+  </Target>
 </Project>
