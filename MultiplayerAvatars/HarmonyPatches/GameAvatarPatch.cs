@@ -15,8 +15,6 @@ namespace MultiplayerAvatars.HarmonyPatches
 
         internal static void Postfix(MultiplayerCoreInstaller __instance)
         {
-            MultiplayerPlayersManager playersManager = Resources.FindObjectsOfTypeAll<MultiplayerPlayersManager>().First();
-
             MonoInstallerBase mib = __instance;
             DiContainer container = SiraUtil.Accessors.GetDiContainer(ref mib);
             MultiplayerPlayersManager manager = container.Resolve<MultiplayerPlayersManager>();
