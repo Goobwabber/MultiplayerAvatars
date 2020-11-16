@@ -7,7 +7,7 @@ using IPALogger = IPA.Logging.Logger;
 
 namespace MultiplayerAvatars
 {
-    [Plugin(RuntimeOptions.SingleStartInit)]
+    [Plugin(RuntimeOptions.DynamicInit)]
     public class Plugin
     {
         public static readonly string HarmonyId = "com.github.Goobwabber.MultiplayerAvatars";
@@ -28,17 +28,17 @@ namespace MultiplayerAvatars
             Plugin.Log?.Debug("Init finished.");
         }
 
-        [OnStart]
-        public void OnApplicationStart()
+        [OnEnable]
+        public void OnEnable()
         {
             Plugin.Log?.Info(UserAgent);
             Harmony.PatchAll();
         }
 
-        [OnExit]
-        public void OnApplicationQuit()
+        [OnDisable]
+        public void OnDisable()
         {
-
+            Harmony.UnpatchAll(HarmonyId);
         }
 
     }
