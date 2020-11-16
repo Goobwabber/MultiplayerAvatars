@@ -8,7 +8,7 @@ A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSabe
 
 ## Installation
 MultiplayerAvatars has not been released yet, but you can grab the latest build which is automagically generated. 
-1. Ensure you have the [required mods](https://github.com/Goobwabber/MultiplayerAvatars/blob/main/README.md#requirements).
+1. Ensure you have the [required mods](https://github.com/Goobwabber/MultiplayerAvatars#requirements).
 1. Download the `MultiplayerAvatars` file listed under `Artifacts` **[Here](https://github.com/Goobwabber/MultiplayerAvatars/actions?query=workflow%3ABuild+branch%3Amain)** (pick the topmost successful build). 
    * You must be logged into GitHub to download builds from GitHub Actions.
 2. Extract the zip file to your Beat Saber game directory (the one `Beat Saber.exe` is in).
