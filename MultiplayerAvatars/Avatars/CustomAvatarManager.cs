@@ -1,41 +1,34 @@
-﻿using CustomAvatar.Avatar;
-using CustomAvatar.Player;
-using MultiplayerExtensions.Packets;
-using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System;
 using Zenject;
+using CustomAvatar.Avatar;
+using CustomAvatar.Player;
+using System.Collections.Generic;
+using MultiplayerExtensions.Packets;
 
 namespace MultiplayerAvatars.Avatars
 {
-    class CustomAvatarManager : IInitializable
+    internal class CustomAvatarManager : IInitializable, IDisposable
     {
-        [Inject]
-        private IMultiplayerSessionManager _sessionManager;
+        private readonly PacketManager _packetManager;
+        private readonly FloorController _floorController;
+        private readonly PlayerAvatarManager _avatarManager;
+        private readonly IMultiplayerSessionManager _sessionManager;
+        private readonly IAvatarProvider<LoadedAvatar> _avatarProvider;
 
-        [Inject]
-        private PacketManager _packetManager;
 
-        [Inject]
-        private AvatarSpawner _avatarSpawner;
-
-        [Inject]
-        private PlayerAvatarManager _avatarManager;
-
-        [Inject]
-        private VRPlayerInput _playerInput;
-
-        [Inject]
-        private FloorController _floorController;
-
-        [Inject]
-        private IAvatarProvider<LoadedAvatar> _avatarProvider;
-
-        private PacketSerializer _serializer = new PacketSerializer();
-
-        public Action<IConnectedPlayer, CustomAvatarData> avatarReceived;
         public CustomAvatarData localAvatar = new CustomAvatarData();
-        private Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
+        public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
+        private readonly PacketSerializer _serializer = new PacketSerializer();
+        private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
+
+        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<LoadedAvatar> avatarProvider)
+        {
+            _packetManager = packetManager;
+            _avatarManager = avatarManager;
+            _sessionManager = sessionManager;
+            _avatarProvider = avatarProvider;
+            _floorController = floorController;
+        }
 
         public void Initialize()
         {
@@ -43,8 +36,8 @@ namespace MultiplayerAvatars.Avatars
             _packetManager.RegisterSerializer(_serializer);
 
             _avatarManager.avatarChanged += OnAvatarChanged;
-            _avatarManager.avatarScaleChanged += delegate(float scale) { localAvatar.scale = scale; };
-            _floorController.floorPositionChanged += delegate (float floor) { localAvatar.floor = floor; };
+            _avatarManager.avatarScaleChanged += SetAvatarScale;
+            _floorController.floorPositionChanged += SetAvatarFloorPosition;
 
             _sessionManager.connectedEvent += SendLocalAvatarPacket;
             _sessionManager.playerConnectedEvent += OnPlayerConnected;
@@ -52,6 +45,27 @@ namespace MultiplayerAvatars.Avatars
 
             OnAvatarChanged(_avatarManager.currentlySpawnedAvatar);
             localAvatar.floor = _floorController.floorPosition;
+        }
+
+        public void Dispose()
+        {
+            _avatarManager.avatarChanged -= OnAvatarChanged;
+            _avatarManager.avatarScaleChanged -= SetAvatarScale;
+            _floorController.floorPositionChanged -= SetAvatarFloorPosition;
+
+            _sessionManager.connectedEvent -= SendLocalAvatarPacket;
+            _sessionManager.playerConnectedEvent -= OnPlayerConnected;
+            _serializer.UnregisterCallback<CustomAvatarPacket>();
+        }
+
+        private void SetAvatarScale(float scale)
+        {
+            localAvatar.scale = scale;
+        }
+
+        private void SetAvatarFloorPosition(float floor)
+        {
+            localAvatar.floor = floor;
         }
 
         public CustomAvatarData? GetAvatarByUserId(string userId)

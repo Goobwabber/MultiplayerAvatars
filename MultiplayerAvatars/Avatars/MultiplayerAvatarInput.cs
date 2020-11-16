@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace MultiplayerAvatars.Avatars
 {
-    class MultiplayerAvatarInput : IAvatarInput
+    internal class MultiplayerAvatarInput : IAvatarInput
     {
         private readonly AvatarPoseController _poseController;
 

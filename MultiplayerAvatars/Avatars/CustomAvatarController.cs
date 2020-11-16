@@ -6,24 +6,26 @@ using Zenject;
 
 namespace MultiplayerAvatars.Avatars
 {
-    class CustomAvatarController : MonoBehaviour
+    internal class CustomAvatarController : MonoBehaviour
     {
-        [Inject]
-        private CustomAvatarManager _customAvatarManager;
-
-        [Inject]
         private AvatarSpawner _avatarSpawner;
-
-        [Inject]
+        protected IConnectedPlayer _connectedPlayer;
+        private CustomAvatarManager _customAvatarManager;
         private IAvatarProvider<LoadedAvatar> _avatarProvider;
-
-        [InjectOptional]
-        protected readonly IConnectedPlayer _connectedPlayer;
 
         private CustomAvatarData avatarData;
         private LoadedAvatar? loadedAvatar;
         private SpawnedAvatar? spawnedAvatar;
         private AvatarPoseController poseController;
+
+        [Inject]
+        public void Construct(AvatarSpawner avatarSpawner, IAvatarProvider<LoadedAvatar> avatarProvider, [InjectOptional] IConnectedPlayer connectedPlayer, CustomAvatarManager customAvatarManager)
+        {
+            _avatarSpawner = avatarSpawner;
+            _avatarProvider = avatarProvider;
+            _connectedPlayer = connectedPlayer;
+            _customAvatarManager = customAvatarManager;
+        }
 
         public virtual void Start()
         {
@@ -79,7 +81,7 @@ namespace MultiplayerAvatars.Avatars
         {
             loadedAvatar = avatar;
             if (spawnedAvatar != null)
-                UnityEngine.Object.Destroy(spawnedAvatar);
+                Destroy(spawnedAvatar);
 
             spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, new MultiplayerAvatarInput(poseController, transform.name != "MultiplayerLobbyAvatar(Clone)"), poseController.transform);
             spawnedAvatar.SetLocomotionEnabled(true);
