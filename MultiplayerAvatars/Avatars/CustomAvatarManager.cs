@@ -7,7 +7,7 @@ using MultiplayerExtensions.Packets;
 
 namespace MultiplayerAvatars.Avatars
 {
-    internal class CustomAvatarManager : IInitializable, IDisposable
+    internal class CustomAvatarManager : IInitializable
     {
         private readonly PacketManager _packetManager;
         private readonly FloorController _floorController;
@@ -18,7 +18,6 @@ namespace MultiplayerAvatars.Avatars
 
         public CustomAvatarData localAvatar = new CustomAvatarData();
         public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
-        private readonly PacketSerializer _serializer = new PacketSerializer();
         private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
 
         internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<LoadedAvatar> avatarProvider)
@@ -33,29 +32,16 @@ namespace MultiplayerAvatars.Avatars
         public void Initialize()
         {
             Plugin.Log?.Info("Setting up CustomAvatarManager");
-            _packetManager.RegisterSerializer(_serializer);
 
             _avatarManager.avatarChanged += OnAvatarChanged;
             _avatarManager.avatarScaleChanged += SetAvatarScale;
             _floorController.floorPositionChanged += SetAvatarFloorPosition;
 
-            _sessionManager.connectedEvent += SendLocalAvatarPacket;
             _sessionManager.playerConnectedEvent += OnPlayerConnected;
-            _serializer.RegisterCallback(HandleAvatarPacket, CustomAvatarPacket.pool.Obtain);
+            _packetManager.RegisterCallback<CustomAvatarPacket>(HandleAvatarPacket);
 
             OnAvatarChanged(_avatarManager.currentlySpawnedAvatar);
             localAvatar.floor = _floorController.floorPosition;
-        }
-
-        public void Dispose()
-        {
-            _avatarManager.avatarChanged -= OnAvatarChanged;
-            _avatarManager.avatarScaleChanged -= SetAvatarScale;
-            _floorController.floorPositionChanged -= SetAvatarFloorPosition;
-
-            _sessionManager.connectedEvent -= SendLocalAvatarPacket;
-            _sessionManager.playerConnectedEvent -= OnPlayerConnected;
-            _serializer.UnregisterCallback<CustomAvatarPacket>();
         }
 
         private void SetAvatarScale(float scale)
@@ -87,14 +73,8 @@ namespace MultiplayerAvatars.Avatars
 
         private void OnPlayerConnected(IConnectedPlayer player)
         {
-            SendLocalAvatarPacket();
-        }
-
-        private void SendLocalAvatarPacket()
-        {
             CustomAvatarPacket localAvatarPacket = localAvatar.GetPacket();
-            Plugin.Log?.Info($"Sending 'CustomAvatarPacket' with {localAvatar.hash}");
-            _sessionManager.Send(localAvatarPacket);
+            _packetManager.Send(localAvatarPacket);
         }
 
         private void HandleAvatarPacket(CustomAvatarPacket packet, IConnectedPlayer player)

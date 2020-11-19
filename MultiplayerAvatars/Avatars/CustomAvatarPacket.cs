@@ -10,11 +10,7 @@ namespace MultiplayerAvatars.Avatars
 {
     public class CustomAvatarPacket : INetSerializable, IPoolablePacket
     {
-        public static PacketPool<CustomAvatarPacket> pool => ThreadStaticPacketPool<CustomAvatarPacket>.pool;
-        public void Release()
-        {
-            CustomAvatarPacket.pool.Release(this);
-        }
+        public void Release() => ThreadStaticPacketPool<CustomAvatarPacket>.pool.Release(this);
 
         public void Serialize(NetDataWriter writer)
         {
