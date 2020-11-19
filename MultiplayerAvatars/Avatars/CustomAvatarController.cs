@@ -65,6 +65,7 @@ namespace MultiplayerAvatars.Avatars
             if (avatar.hash == new CustomAvatarData().hash)
                 return;
 
+            avatarData = avatar;
             _avatarProvider.FetchAvatarByHash(avatar.hash, CancellationToken.None).ContinueWith(a =>
             {
                 if (!a.IsFaulted && a.Result is LoadedAvatar)
