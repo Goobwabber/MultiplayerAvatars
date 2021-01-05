@@ -28,7 +28,7 @@ jobs:
     - name: ExtractRefs
       run: unzip -q -n bsfiles.zip -d ./Refs
     - name: Download Mod Dependencies
-      uses: Goobwabber/download-beatmods-deps@1.1
+      uses: Goobwabber/download-beatmods-deps@c43ec17d48d522f48d1c19c7b92ae61e1ee6a7db
       with:
         manifest: ./MultiplayerAvatars/manifest.json
     - name: Download MultiplayerExtensions
