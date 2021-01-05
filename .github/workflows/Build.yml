@@ -34,6 +34,7 @@ jobs:
         path: ./Refs
         repo: Zingabopp/MultiplayerExtensions
         branch: master 
+        name: MultiplayerExtensions
     - name: Build
       id: Build
       env: 
