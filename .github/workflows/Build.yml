@@ -27,6 +27,12 @@ jobs:
       run: wget --no-check-certificate "$FILES_URL" -q -O bsfiles.zip
     - name: ExtractRefs
       run: unzip -q -n bsfiles.zip -d ./Refs
+    - name: Download MultiplayerExtensions
+      with:
+        workflow: Build.yml
+        path: ./Refs
+        repo: Zingabopp/MultiplayerExtensions
+        branch: master 
     - name: Build
       id: Build
       env: 
