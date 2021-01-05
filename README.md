@@ -1,8 +1,6 @@
 # MultiplayerAvatars (PC Only) [![Build](https://github.com/Goobwabber/MultiplayerAvatars/workflows/Build/badge.svg?event=push)](https://github.com/Goobwabber/MultiplayerAvatars/actions?query=workflow%3ABuild)
 A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) support to the [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) mod. **This is a work in progress which has bugs.**
 
-**__This mod has been put on the backburner in favor of MultiplayerExtensions and MultiQuestensions. Contributions are welcome!__**
-
 ## Features
 * Sends avatar data to other players who have the mod.
 * Spawns other player's avatars.

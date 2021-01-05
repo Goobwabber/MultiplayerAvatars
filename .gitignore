@@ -341,6 +341,7 @@ healthchecksdb
 
 Refs/Beat Saber_Data/Managed/*
 !Refs/Beat Saber_Data/Managed/IPA.*
+Refs/Plugins/*
 /bsinstalldir.txt
 
 MultiplayerAvatars/Properties/launchSettings.json
