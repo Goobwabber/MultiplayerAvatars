@@ -28,6 +28,7 @@ jobs:
     - name: ExtractRefs
       run: unzip -q -n bsfiles.zip -d ./Refs
     - name: Download MultiplayerExtensions
+      uses: dawidd6/action-download-artifact@v2
       with:
         workflow: Build.yml
         path: ./Refs
