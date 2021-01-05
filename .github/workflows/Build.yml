@@ -30,7 +30,7 @@ jobs:
     - name: Download Mod Dependencies
       uses: Goobwabber/download-beatmods-deps@1.1
       with:
-        manifest: ./MultiplayerExtensions/manifest.json
+        manifest: ./MultiplayerAvatars/manifest.json
     - name: Download MultiplayerExtensions
       uses: dawidd6/action-download-artifact@v2
       with:
