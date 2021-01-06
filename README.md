@@ -1,6 +1,8 @@
 # MultiplayerAvatars (PC Only) [![Build](https://github.com/Goobwabber/MultiplayerAvatars/workflows/Build/badge.svg?event=push)](https://github.com/Goobwabber/MultiplayerAvatars/actions?query=workflow%3ABuild)
 A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) support to the [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) mod. **This is a work in progress which has bugs.**
 
+**__This mod has been put on the backburner in favor of MultiplayerExtensions and MultiQuestensions. Contributions are welcome!__**
+
 ## Features
 * Sends avatar data to other players who have the mod.
 * Spawns other player's avatars.
@@ -17,8 +19,8 @@ MultiplayerAvatars has not been released yet, but you can grab the latest build 
 
 ## Requirements
 Mods without a link can be downloaded from [BeatMods](https://beatmods.com/#/mods) or using Mod Assistant. **Do NOT use any of the DLLs in the `Refs` folder, they have been stripped of code and will not work.**
-* [BeatSaberCustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) 5.0.3+
-* [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) 0.2.0+
+* [CustomAvatar](https://github.com/nicoco007/BeatSaberCustomAvatars) 5.0.2+
+* [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) 0.3.0
 * SiraUtil 2.1.0+
 
 ## Contributing
@@ -30,7 +32,10 @@ Visual Studio 2019 with the [BeatSaberModdingTools](https://github.com/Zingabopp
 3. Right-click the `MultiplayerAvatars` project, go to `Beat Saber Modding Tools` -> `Set Beat Saber Directory`
    * This assumes you have already set the directory for your Beat Saber game folder in `Extensions` -> `Beat Saber Modding Tools` -> `Settings...`
    * If you do not have the BeatSaberModdingTools extension, you will need to manually create a `MultiplayerAvatars.csproj.user` file to set the location of your game install. An example is showing below.
-4. The project should now build.
+4. The project should now build. 
+
+Troubleshooting: 
+	-If you have any issues with Nuget('' is not a valid version) or VS asks you to 'upgrade' the csproj, you're likely missing some neccessary VS2019 features.
 
 **Example csproj.user File:**
 ```xml
@@ -41,3 +46,7 @@ Visual Studio 2019 with the [BeatSaberModdingTools](https://github.com/Zingabopp
   </PropertyGroup>
 </Project>
 ```
+
+## Known Issues
+
+1. The avatar you have loaded when you start the game will not be cached by the mod, so if other players use the same one, they may not show up (or it will download a duplicate from ModelSaber).

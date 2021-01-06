@@ -45,7 +45,7 @@ namespace MultiplayerAvatars.Avatars
                     int index = 2;
                     while (File.Exists(customAvatarPath))
                     {
-                        customAvatarPath = Path.Combine(avatarDirectory, $"{name}_{index}.avatar");
+                        customAvatarPath = Path.Combine(avatarDirectory, $"{name}_{index++}.avatar");
                     }
                     using (var fs = File.Create(customAvatarPath))
                     {
