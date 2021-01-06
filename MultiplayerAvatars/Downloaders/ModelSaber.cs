@@ -110,14 +110,14 @@ namespace MultiplayerAvatars.Downloaders
         {
             //var avatarFiles = Directory.GetFiles(PlayerAvatarManager.kCustomAvatarsPath, "*.avatar");
             var avatarFiles = Directory.GetFiles(AvatarDirectory, "*.avatar");
-            Plugin.Log?.Debug($"Hashing avatars... {cachedAvatarsCount} possible avatars found");
+            Plugin.Log?.Debug($"Hashing avatars... {avatarFiles.Length} possible avatars found");
             cachedAvatars.Clear();
             foreach (string avatarFile in avatarFiles)
             {
                 await LoadAvatar(avatarFile);
             }
             isCalculatingHashes = false;
-            Plugin.Log?.Debug("All avatars hashed and loaded!");
+            Plugin.Log?.Debug($"{cachedAvatarsCount} avatars hashed and loaded!");
             HMMainThreadDispatcher.instance.Enqueue(() =>
             {
                 hashesCalculated?.Invoke(this, EventArgs.Empty);
