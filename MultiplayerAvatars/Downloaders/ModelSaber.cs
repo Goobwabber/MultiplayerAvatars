@@ -133,7 +133,7 @@ namespace MultiplayerAvatars.Downloaders
                 await IPA.Utilities.Async.Coroutines.AsTask(coroutine);
                 if (!tcs.Task.IsCompleted)
                 {
-                    var timeout = Task.Delay(5000);
+                    var timeout = Task.Delay(10000);
                     var task = await Task.WhenAny(tcs.Task, timeout);
                     if (task == timeout)
                     {
@@ -151,7 +151,8 @@ namespace MultiplayerAvatars.Downloaders
                 try
                 {
                     string calculatedHash = await HashAvatar(avatar);
-                    cachedAvatars.Add(calculatedHash, avatar);
+                    if(!cachedAvatars.ContainsKey(calculatedHash))
+                        cachedAvatars.Add(calculatedHash, avatar);
                     Plugin.Log?.Debug($"Hashed avatar \"{avatar.descriptor.name}\"! Hash: {calculatedHash}");
                 }
                 catch (Exception ex)

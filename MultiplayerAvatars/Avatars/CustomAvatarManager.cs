@@ -17,6 +17,7 @@ namespace MultiplayerAvatars.Avatars
 
 
         public CustomAvatarData localAvatar = new CustomAvatarData();
+        public bool hashesCalculated = false;
         public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
         private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
 
@@ -32,7 +33,7 @@ namespace MultiplayerAvatars.Avatars
         public void Initialize()
         {
             Plugin.Log?.Info("Setting up CustomAvatarManager");
-
+            _avatarProvider.hashesCalculated += (x,y) => hashesCalculated = true;
             _avatarManager.avatarChanged += OnAvatarChanged;
             _avatarManager.avatarScaleChanged += SetAvatarScale;
             _floorController.floorPositionChanged += SetAvatarFloorPosition;
@@ -64,6 +65,13 @@ namespace MultiplayerAvatars.Avatars
         private void OnAvatarChanged(SpawnedAvatar avatar)
         {
             if (!avatar) return;
+            if (!hashesCalculated)
+            {
+                _avatarProvider.hashesCalculated += (x, y) => OnAvatarChanged(avatar);
+                return;
+            }
+
+            Plugin.Log?.Warn($"Attempting to hash {avatar.avatar.fullPath}");
             _avatarProvider.HashAvatar(avatar.avatar).ContinueWith(r =>
             {
                 localAvatar.hash = r.Result;

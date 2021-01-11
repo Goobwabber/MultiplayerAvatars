@@ -49,4 +49,6 @@ Troubleshooting:
 
 ## Known Issues
 
-1. The avatar you have loaded when you start the game will not be cached by the mod, so if other players use the same one, they may not show up (or it will download a duplicate from ModelSaber).
+1. The default Beat Saber avatar hands will render/overlap your avatar in-game (but not in the lobby).
+2. The "Camera Near Clip Plane" value is not respected in-game (but works in the lobby).
+3. The 1st place hologram will still be the default Beat Saber avatar.
