@@ -15,7 +15,6 @@ namespace MultiplayerAvatars.Avatars
         bool isCalculatingHashes { get; }
         int cachedAvatarsCount { get; }
         string AvatarDirectory { get; }
-        Task<string> HashAvatar(string path);
         Task HashAllAvatars(string directory);
         bool CacheAvatar(string avatarPath);
         Task<AvatarInfo?> FetchAvatarInfoByHash(string hash, CancellationToken cancellationToken);

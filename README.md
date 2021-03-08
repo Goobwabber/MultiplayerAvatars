@@ -21,7 +21,7 @@ MultiplayerAvatars has not been released yet, but you can grab the latest build 
 Mods without a link can be downloaded from [BeatMods](https://beatmods.com/#/mods) or using Mod Assistant. **Do NOT use any of the DLLs in the `Refs` folder, they have been stripped of code and will not work.**
 * [CustomAvatar](https://github.com/nicoco007/BeatSaberCustomAvatars) 5.1.2+
 * [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) 0.4.3
-* SiraUtil 2.4.0+
+* SiraUtil 2.5.1+
 
 ## Contributing
 Anyone can feel free to contribute bug fixes or enhancements to MultiplayerAvatars. GitHub Actions for Pull Requests made from GitHub accounts that don't have direct access to the repository will fail. This is normal because the Action requires a `Secret` to download dependencies.
@@ -52,3 +52,4 @@ Troubleshooting:
 1. The default Beat Saber avatar hands will render/overlap your avatar in-game (but not in the lobby).
 2. The "Camera Near Clip Plane" value is not respected in-game (but works in the lobby).
 3. The 1st place hologram will still be the default Beat Saber avatar.
+4. Only avatars hosted on modelsaber.com will automatically download for opponents, any custom avatars will have to be shared/added to their folders manually.

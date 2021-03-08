@@ -86,11 +86,7 @@ namespace MultiplayerAvatars.Downloaders
 
         public Task<string> HashAvatar(LoadedAvatar avatar)
         {
-            return HashAvatar(avatar?.fullPath ?? throw new ArgumentNullException(nameof(avatar)));
-        }
-
-        public Task<string> HashAvatar(string path)
-        {
+            var path = avatar?.fullPath ?? throw new ArgumentNullException(nameof(avatar));
             string fullPath = Path.Combine(Path.GetFullPath("CustomAvatars"), path);
             if (!File.Exists(fullPath))
                 throw new ArgumentException($"File at {fullPath} does not exist.");
@@ -101,6 +97,8 @@ namespace MultiplayerAvatars.Downloaders
                 using (var fs = File.OpenRead(fullPath))
                 {
                     hash = BitConverter.ToString(MD5.Create().ComputeHash(fs)).Replace("-", "");
+                    if (!cachedAvatars.ContainsKey(hash))
+                        cachedAvatars.Add(hash, avatar);
                     return hash;
                 }
             });
@@ -151,8 +149,6 @@ namespace MultiplayerAvatars.Downloaders
                 try
                 {
                     string calculatedHash = await HashAvatar(avatar);
-                    if(!cachedAvatars.ContainsKey(calculatedHash))
-                        cachedAvatars.Add(calculatedHash, avatar);
                     Plugin.Log?.Debug($"Hashed avatar \"{avatar.descriptor.name}\"! Hash: {calculatedHash}");
                 }
                 catch (Exception ex)

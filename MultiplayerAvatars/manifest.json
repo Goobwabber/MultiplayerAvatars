@@ -5,11 +5,11 @@
   "author": "Goobwabber",
   "version": "0.0.1",
   "description": "Adds CustomAvatar support for beatsaber using MultiplayerExtensions",
-  "gameVersion": "1.13.0",
+  "gameVersion": "1.13.2",
     "dependsOn": {
         "BSIPA": "^4.1.4",
         "MultiplayerExtensions": "0.4.3",
-        "SiraUtil": "^2.4.0",
+        "SiraUtil": "^2.5.1",
         "Custom Avatars": "^5.1.2"
     }
 }
