@@ -52,7 +52,7 @@ namespace MultiplayerAvatars.Avatars
 
         public bool allowMaintainPelvisPosition => true;
 
-        public event Action inputChanged;
+        public event Action? inputChanged;
 
         public bool TryGetFingerCurl(DeviceUse use, out FingerCurl curl)
         {

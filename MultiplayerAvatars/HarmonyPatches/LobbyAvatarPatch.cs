@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using MultiplayerAvatars.Avatars;
+using System;
 
 namespace MultiplayerAvatars.HarmonyPatches
 {
@@ -8,9 +9,17 @@ namespace MultiplayerAvatars.HarmonyPatches
     {
         internal static void Prefix(ref MultiplayerLobbyAvatarController ____multiplayerLobbyAvatarControllerPrefab)
         {
-            if (!____multiplayerLobbyAvatarControllerPrefab.gameObject.TryGetComponent<CustomAvatarController>(out CustomAvatarController _))
+            try
             {
-                ____multiplayerLobbyAvatarControllerPrefab.gameObject.AddComponent<CustomAvatarController>();
+                if (!____multiplayerLobbyAvatarControllerPrefab.gameObject.TryGetComponent<CustomAvatarController>(out CustomAvatarController _))
+                {
+                    ____multiplayerLobbyAvatarControllerPrefab.gameObject.AddComponent<CustomAvatarController>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.Error(ex);
+                throw;
             }
         }
     }

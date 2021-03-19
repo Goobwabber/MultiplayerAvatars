@@ -106,6 +106,8 @@ namespace MultiplayerAvatars.Avatars
                 File.WriteAllBytes(customAvatarPath, data);
                 Plugin.Log?.Debug("Downloaded avatar!");
 
+                _ = name ?? throw new InvalidOperationException("Unable to download avatar. No name found.");
+
                 callback(name);
             }
             catch (Exception e)
