@@ -13,7 +13,7 @@ namespace MultiplayerAvatars.Avatars
         private readonly FloorController _floorController;
         private readonly PlayerAvatarManager _avatarManager;
         private readonly IMultiplayerSessionManager _sessionManager;
-        private readonly IAvatarProvider<LoadedAvatar> _avatarProvider;
+        private readonly IAvatarProvider<AvatarPrefab> _avatarProvider;
 
 
         public CustomAvatarData localAvatar = new CustomAvatarData();
@@ -21,7 +21,7 @@ namespace MultiplayerAvatars.Avatars
         public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
         private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
 
-        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<LoadedAvatar> avatarProvider)
+        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<AvatarPrefab> avatarProvider)
         {
             _packetManager = packetManager;
             _avatarManager = avatarManager;
@@ -33,7 +33,7 @@ namespace MultiplayerAvatars.Avatars
         public void Initialize()
         {
             Plugin.Log?.Info("Setting up CustomAvatarManager");
-            _avatarProvider.hashesCalculated += (x,y) => hashesCalculated = true;
+            _avatarProvider.hashesCalculated += (x, y) => hashesCalculated = true;
             _avatarManager.avatarChanged += OnAvatarChanged;
             _avatarManager.avatarScaleChanged += SetAvatarScale;
             _floorController.floorPositionChanged += SetAvatarFloorPosition;
@@ -71,8 +71,8 @@ namespace MultiplayerAvatars.Avatars
                 return;
             }
 
-            Plugin.Log?.Warn($"Attempting to hash {avatar.avatar.fullPath}");
-            _avatarProvider.HashAvatar(avatar.avatar).ContinueWith(r =>
+            Plugin.Log?.Warn($"Attempting to hash {avatar.prefab.fullPath}");
+            _avatarProvider.HashAvatar(avatar.prefab).ContinueWith(r =>
             {
                 localAvatar.hash = r.Result;
                 localAvatar.scale = avatar.scale;

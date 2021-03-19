@@ -12,10 +12,10 @@ namespace MultiplayerAvatars
     {
         public static readonly string HarmonyId = "com.github.Goobwabber.MultiplayerAvatars";
         public static readonly string UserAgent = $"MultiplayerAvatars/{Assembly.GetExecutingAssembly().GetName().Version} {VersionInfo.Description}";
-        internal static Plugin Instance { get; private set; }
-        internal static IPALogger Log { get; private set; }
-        internal static Harmony Harmony;
-        internal static Zenjector Zenjector;
+        internal static Plugin Instance { get; private set; } = null!;
+        internal static IPALogger Log { get; private set; } = null!;
+        internal static Harmony Harmony = null!;
+        internal static Zenjector Zenjector = null!;
 
         [Init]
         public Plugin(IPALogger logger, Zenjector zenjector)

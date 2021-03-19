@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using IPA.Utilities;
 using MultiplayerAvatars.Avatars;
+using System;
 using System.Linq;
 using UnityEngine;
 using Zenject;
@@ -15,22 +16,38 @@ namespace MultiplayerAvatars.HarmonyPatches
 
         internal static void Postfix(MultiplayerCoreInstaller __instance)
         {
-            MonoInstallerBase mib = __instance;
-            DiContainer container = SiraUtil.Accessors.GetDiContainer(ref mib);
-            MultiplayerPlayersManager manager = container.Resolve<MultiplayerPlayersManager>();
+            try
+            {
+                MonoInstallerBase mib = __instance;
+                DiContainer container = SiraUtil.Accessors.GetDiContainer(ref mib);
+                MultiplayerPlayersManager manager = container.Resolve<MultiplayerPlayersManager>();
 
-            MultiplayerConnectedPlayerFacade playerFacade = PlayerFacade(ref manager);
-            MultiplayerConnectedPlayerFacade duelPlayerFacade = PlayerDuelFacade(ref manager);
-            SetupPoseController(playerFacade);
-            SetupPoseController(duelPlayerFacade);
+                MultiplayerConnectedPlayerFacade playerFacade = PlayerFacade(ref manager);
+                MultiplayerConnectedPlayerFacade duelPlayerFacade = PlayerDuelFacade(ref manager);
+                SetupPoseController(playerFacade);
+                SetupPoseController(duelPlayerFacade);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.Error(ex);
+                throw;
+            }
         }
 
         static void SetupPoseController(MultiplayerConnectedPlayerFacade playerFacade)
         {
-            MultiplayerAvatarPoseController multiplayerPoseController = playerFacade.GetComponentInChildren<MultiplayerAvatarPoseController>();
-            if (!multiplayerPoseController.gameObject.TryGetComponent(out CustomAvatarController _))
+            try
             {
-                multiplayerPoseController.gameObject.AddComponent<CustomAvatarController>();
+                MultiplayerAvatarPoseController multiplayerPoseController = playerFacade.GetComponentInChildren<MultiplayerAvatarPoseController>();
+                if (!multiplayerPoseController.gameObject.TryGetComponent(out CustomAvatarController _))
+                {
+                    multiplayerPoseController.gameObject.AddComponent<CustomAvatarController>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.Error(ex);
+                throw;
             }
         }
     }

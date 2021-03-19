@@ -22,10 +22,10 @@ namespace MultiplayerAvatars.Avatars
 
     public interface IAvatarProvider<T> : IAvatarProvider where T : class
     {
-        bool TryGetCachedAvatar(string hash, out T avatar);
-        Task<T> LoadAvatar(string avatarPath);
+        bool TryGetCachedAvatar(string hash, out T? avatar);
+        Task<T?> LoadAvatar(string avatarPath);
         Task<string> HashAvatar(T avatar);
-        Task<T> FetchAvatarByHash(string hash, CancellationToken cancellationToken);
+        Task<T?> FetchAvatarByHash(string hash, CancellationToken cancellationToken);
     }
 
 

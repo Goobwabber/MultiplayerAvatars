@@ -1,4 +1,5 @@
 ﻿using CustomAvatar.Avatar;
+using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -8,18 +9,18 @@ namespace MultiplayerAvatars.Avatars
 {
     internal class CustomAvatarController : MonoBehaviour
     {
-        private AvatarSpawner _avatarSpawner;
-        protected IConnectedPlayer _connectedPlayer;
-        private CustomAvatarManager _customAvatarManager;
-        private IAvatarProvider<LoadedAvatar> _avatarProvider;
+        private AvatarSpawner _avatarSpawner = null!;
+        protected IConnectedPlayer _connectedPlayer = null!;
+        private CustomAvatarManager _customAvatarManager = null!;
+        private IAvatarProvider<AvatarPrefab> _avatarProvider = null!;
 
-        private CustomAvatarData avatarData;
-        private LoadedAvatar? loadedAvatar;
+        private CustomAvatarData? avatarData;
+        private AvatarPrefab? loadedAvatar;
         private SpawnedAvatar? spawnedAvatar;
-        private AvatarPoseController poseController;
+        private AvatarPoseController? poseController;
 
         [Inject]
-        public void Construct(AvatarSpawner avatarSpawner, IAvatarProvider<LoadedAvatar> avatarProvider, [InjectOptional] IConnectedPlayer connectedPlayer, CustomAvatarManager customAvatarManager)
+        public void Construct(AvatarSpawner avatarSpawner, IAvatarProvider<AvatarPrefab> avatarProvider, [InjectOptional] IConnectedPlayer connectedPlayer, CustomAvatarManager customAvatarManager)
         {
             _avatarSpawner = avatarSpawner;
             _avatarProvider = avatarProvider;
@@ -45,10 +46,10 @@ namespace MultiplayerAvatars.Avatars
         public void TryGetPoseController()
         {
             var poseControllers = gameObject.GetComponentsInChildren<AvatarPoseController>();
-            if(poseControllers.Length != 0)
+            if (poseControllers.Length != 0)
             {
                 poseController = poseControllers.First();
-                CustomAvatarData avatar = _customAvatarManager.GetAvatarByUserId(_connectedPlayer.userId);
+                CustomAvatarData? avatar = _customAvatarManager.GetAvatarByUserId(_connectedPlayer.userId);
                 if (avatar != null)
                     OnAvatarReceived(_connectedPlayer, avatar);
             }
@@ -68,7 +69,7 @@ namespace MultiplayerAvatars.Avatars
             avatarData = avatar;
             _avatarProvider.FetchAvatarByHash(avatar.hash, CancellationToken.None).ContinueWith(a =>
             {
-                if (!a.IsFaulted && a.Result is LoadedAvatar)
+                if (!a.IsFaulted && a.Result is AvatarPrefab)
                 {
                     HMMainThreadDispatcher.instance.Enqueue(() =>
                     {
@@ -78,14 +79,17 @@ namespace MultiplayerAvatars.Avatars
             });
         }
 
-        private void CreateAvatar(LoadedAvatar avatar)
+        private void CreateAvatar(AvatarPrefab avatar)
         {
+            _ = avatarData ?? throw new InvalidOperationException("avatarData is not loaded.");
+            _ = poseController ?? throw new InvalidOperationException("Pose controller is not loaded.");
+
             loadedAvatar = avatar;
             if (spawnedAvatar != null)
                 Destroy(spawnedAvatar);
 
             spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, new MultiplayerAvatarInput(poseController, transform.name != "MultiplayerLobbyAvatar(Clone)"), poseController.transform);
-            spawnedAvatar.SetLocomotionEnabled(true);
+            spawnedAvatar.GetComponent<AvatarIK>().isLocomotionEnabled = true;
             spawnedAvatar.scale = avatarData.scale;
         }
     }
