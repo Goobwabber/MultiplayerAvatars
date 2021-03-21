@@ -1,5 +1,6 @@
 ﻿using CustomAvatar.Avatar;
 using CustomAvatar.Player;
+using JetBrains.Annotations;
 using MultiplayerAvatars.Avatars;
 using Newtonsoft.Json;
 using System;
@@ -17,33 +18,33 @@ using Zenject;
 
 namespace MultiplayerAvatars.Downloaders
 {
-    public class ModelSaber : IAvatarProvider<LoadedAvatar>, IInitializable
+    public class ModelSaber : IAvatarProvider<AvatarPrefab>, IInitializable
     {
         [Inject]
-        private AvatarLoader _avatarLoader;
+        private AvatarLoader? _avatarLoader;
 
         public event EventHandler<AvatarDownloadedEventArgs>? avatarDownloaded;
         public event EventHandler? hashesCalculated;
-        public Type AvatarType => typeof(LoadedAvatar);
+        public Type AvatarType => typeof(AvatarPrefab);
         public bool isCalculatingHashes { get; protected set; }
         public int cachedAvatarsCount => cachedAvatars.Count;
         public string AvatarDirectory => PlayerAvatarManager.kCustomAvatarsPath;
 
-        private Dictionary<string, LoadedAvatar> cachedAvatars = new Dictionary<string, LoadedAvatar>();
+        private Dictionary<string, AvatarPrefab> cachedAvatars = new Dictionary<string, AvatarPrefab>();
 
         public bool CacheAvatar(string avatarPath)
         {
             return false;
         }
 
-        public bool TryGetCachedAvatar(string hash, out LoadedAvatar avatar)
+        public bool TryGetCachedAvatar(string hash, out AvatarPrefab? avatar)
         {
             return cachedAvatars.TryGetValue(hash, out avatar);
         }
 
-        public async Task<LoadedAvatar?> FetchAvatarByHash(string hash, CancellationToken cancellationToken)
+        public async Task<AvatarPrefab?> FetchAvatarByHash(string hash, CancellationToken cancellationToken)
         {
-            if (cachedAvatars.TryGetValue(hash, out LoadedAvatar cachedAvatar))
+            if (cachedAvatars.TryGetValue(hash, out AvatarPrefab cachedAvatar))
                 return cachedAvatar;
             var avatarInfo = await FetchAvatarInfoByHash(hash, cancellationToken);
             if (avatarInfo == null)
@@ -84,7 +85,7 @@ namespace MultiplayerAvatars.Downloaders
             return avatarInfo;
         }
 
-        public Task<string> HashAvatar(LoadedAvatar avatar)
+        public Task<string> HashAvatar(AvatarPrefab avatar)
         {
             var path = avatar?.fullPath ?? throw new ArgumentNullException(nameof(avatar));
             string fullPath = Path.Combine(Path.GetFullPath("CustomAvatars"), path);
@@ -122,12 +123,14 @@ namespace MultiplayerAvatars.Downloaders
             });
         }
 
-        public async Task<LoadedAvatar?> LoadAvatar(string avatarFile)
+        public async Task<AvatarPrefab?> LoadAvatar(string avatarFile)
         {
-            TaskCompletionSource<LoadedAvatar?> tcs = new TaskCompletionSource<LoadedAvatar?>();
+            TaskCompletionSource<AvatarPrefab?> tcs = new TaskCompletionSource<AvatarPrefab?>();
             try
             {
-                var coroutine = _avatarLoader.FromFileCoroutine(avatarFile, (LoadedAvatar avatar) => tcs.TrySetResult(avatar), e => tcs.TrySetException(e));
+                _ = _avatarLoader ?? throw new InvalidOperationException("Avatar loader not set.");
+
+                var coroutine = _avatarLoader.LoadFromFileAsync(avatarFile, (AvatarPrefab avatar) => tcs.TrySetResult(avatar), e => tcs.TrySetException(e));
                 await IPA.Utilities.Async.Coroutines.AsTask(coroutine);
                 if (!tcs.Task.IsCompleted)
                 {
@@ -140,7 +143,7 @@ namespace MultiplayerAvatars.Downloaders
                         return null;
                     }
                 }
-                LoadedAvatar? avatar = await tcs.Task;
+                AvatarPrefab? avatar = await tcs.Task;
                 if (avatar == null)
                 {
                     Plugin.Log?.Warn($"Couldn't load avatar at '{avatarFile}'");
@@ -168,7 +171,19 @@ namespace MultiplayerAvatars.Downloaders
 
         public void Initialize()
         {
-            HashAllAvatars(AvatarDirectory);
+            _ = InitializeTask();
+        }
+
+        private async Task InitializeTask()
+        {
+            try
+            {
+                await HashAllAvatars(AvatarDirectory);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.Error(ex);
+            }
         }
     }
 }

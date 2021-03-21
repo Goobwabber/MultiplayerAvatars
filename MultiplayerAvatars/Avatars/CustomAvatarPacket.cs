@@ -35,7 +35,7 @@ namespace MultiplayerAvatars.Avatars
             return this;
         }
 
-        public string hash;
+        public string hash = null!;
         public float scale;
         public float floor;
     }
