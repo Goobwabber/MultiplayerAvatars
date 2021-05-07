@@ -8,7 +8,7 @@
   "gameVersion": "1.13.5",
   "dependsOn": {
     "BSIPA": "^4.1.4",
-    "MultiplayerExtensions": "0.4.7",
+    "MultiplayerExtensions": "^0.4.7",
     "SiraUtil": "^2.5.2",
     "CustomAvatar": "5.2.1"
   }
