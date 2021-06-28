@@ -4,7 +4,7 @@
   "name": "MultiplayerAvatars",
   "author": "Goobwabber",
   "version": "0.0.3",
-  "description": "Adds CustomAvatar support for beatsaber using MultiplayerExtensions",
+  "description": "Adds CustomAvatar support for beatsaber using MultiplayerExtensions.",
   "gameVersion": "1.13.5",
   "dependsOn": {
     "BSIPA": "^4.1.4",
