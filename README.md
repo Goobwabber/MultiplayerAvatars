@@ -1,7 +1,5 @@
 # MultiplayerAvatars (PC Only) [![Build](https://github.com/Goobwabber/MultiplayerAvatars/workflows/Build/badge.svg?event=push)](https://github.com/Goobwabber/MultiplayerAvatars/actions?query=workflow%3ABuild)
-A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) support to the [MultiplayerExtensions](https://github.com/Zingabopp/MultiplayerExtensions) mod. **This is a work in progress which has bugs.**
-
-**__This mod has been put on the backburner in favor of MultiplayerExtensions and MultiQuestensions. Contributions are welcome!__**
+A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) support to the [MultiplayerExtensions](https://github.com/Goobwabber/MultiplayerExtensions) mod. **This is a work in progress which has bugs.**
 
 ## Features
 * Sends avatar data to other players who have the mod.
@@ -46,10 +44,3 @@ Troubleshooting:
   </PropertyGroup>
 </Project>
 ```
-
-## Known Issues
-
-1. The default Beat Saber avatar hands will render/overlap your avatar in-game (but not in the lobby).
-2. The "Camera Near Clip Plane" value is not respected in-game (but works in the lobby).
-3. The 1st place hologram will still be the default Beat Saber avatar.
-4. Only avatars hosted on modelsaber.com will automatically download for opponents, any custom avatars will have to be shared/added to their folders manually.
