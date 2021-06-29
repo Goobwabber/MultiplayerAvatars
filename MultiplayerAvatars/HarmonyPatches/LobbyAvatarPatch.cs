@@ -4,7 +4,7 @@ using System;
 
 namespace MultiplayerAvatars.HarmonyPatches
 {
-    [HarmonyPatch(typeof(MenuInstaller), "InstallBindings", MethodType.Normal)]
+    [HarmonyPatch(typeof(MultiplayerLobbyInstaller), "InstallBindings", MethodType.Normal)]
     internal class LobbyAvatarPatch
     {
         internal static void Prefix(ref MultiplayerLobbyAvatarController ____multiplayerLobbyAvatarControllerPrefab)

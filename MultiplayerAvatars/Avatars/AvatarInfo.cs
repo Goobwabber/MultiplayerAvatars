@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -33,8 +30,7 @@ namespace MultiplayerAvatars.Avatars
                 string? customAvatarPath = null;
                 try
                 {
-                    HttpClient client = Utilities.HttpClient;
-                    HttpResponseMessage? response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+                    HttpResponseMessage? response = await Plugin.HttpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
                     string avatarDirectory = Path.Combine(IPA.Utilities.UnityGame.InstallPath, "CustomAvatars");
                     Directory.CreateDirectory(avatarDirectory);

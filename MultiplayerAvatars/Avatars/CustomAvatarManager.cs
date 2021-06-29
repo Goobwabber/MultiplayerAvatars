@@ -4,13 +4,13 @@ using CustomAvatar.Avatar;
 using CustomAvatar.Player;
 using System.Collections.Generic;
 using MultiplayerExtensions.Packets;
+using MultiplayerAvatars.Providers;
 
 namespace MultiplayerAvatars.Avatars
 {
     internal class CustomAvatarManager : IInitializable
     {
         private readonly PacketManager _packetManager;
-        private readonly FloorController _floorController;
         private readonly PlayerAvatarManager _avatarManager;
         private readonly IMultiplayerSessionManager _sessionManager;
         private readonly IAvatarProvider<AvatarPrefab> _avatarProvider;
@@ -21,38 +21,25 @@ namespace MultiplayerAvatars.Avatars
         public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
         private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
 
-        internal CustomAvatarManager(PacketManager packetManager, FloorController floorController, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<AvatarPrefab> avatarProvider)
+        internal CustomAvatarManager(PacketManager packetManager, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<AvatarPrefab> avatarProvider)
         {
             _packetManager = packetManager;
             _avatarManager = avatarManager;
             _sessionManager = sessionManager;
             _avatarProvider = avatarProvider;
-            _floorController = floorController;
         }
 
         public void Initialize()
         {
             Plugin.Log?.Info("Setting up CustomAvatarManager");
             _avatarProvider.hashesCalculated += (x, y) => hashesCalculated = true;
+            _avatarManager.avatarScaleChanged += scale => localAvatar.scale = scale;
             _avatarManager.avatarChanged += OnAvatarChanged;
-            _avatarManager.avatarScaleChanged += SetAvatarScale;
-            _floorController.floorPositionChanged += SetAvatarFloorPosition;
 
             _sessionManager.playerConnectedEvent += OnPlayerConnected;
             _packetManager.RegisterCallback<CustomAvatarPacket>(HandleAvatarPacket);
 
             OnAvatarChanged(_avatarManager.currentlySpawnedAvatar);
-            localAvatar.floor = _floorController.floorPosition;
-        }
-
-        private void SetAvatarScale(float scale)
-        {
-            localAvatar.scale = scale;
-        }
-
-        private void SetAvatarFloorPosition(float floor)
-        {
-            localAvatar.floor = floor;
         }
 
         public CustomAvatarData? GetAvatarByUserId(string userId)

@@ -1,22 +1,17 @@
 ﻿using CustomAvatar.Avatar;
 using CustomAvatar.Player;
-using JetBrains.Annotations;
 using MultiplayerAvatars.Avatars;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.Networking;
 using Zenject;
 
-namespace MultiplayerAvatars.Downloaders
+namespace MultiplayerAvatars.Providers
 {
     public class ModelSaber : IAvatarProvider<AvatarPrefab>, IInitializable
     {
@@ -65,7 +60,7 @@ namespace MultiplayerAvatars.Downloaders
             try
             {
                 Uri uri = new Uri($"https://modelsaber.com/api/v1/avatar/get.php?filter=hash:{hash}");
-                var response = await Utilities.HttpClient.GetAsync(uri, cancellationToken);
+                var response = await Plugin.HttpClient.GetAsync(uri, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
                     Plugin.Log.Debug("Received response from ModelSaber...");

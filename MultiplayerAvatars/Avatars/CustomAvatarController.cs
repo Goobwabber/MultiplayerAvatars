@@ -1,4 +1,5 @@
 ﻿using CustomAvatar.Avatar;
+using MultiplayerAvatars.Providers;
 using System;
 using System.Linq;
 using System.Threading;

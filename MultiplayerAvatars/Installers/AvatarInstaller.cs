@@ -1,10 +1,5 @@
 ﻿using MultiplayerAvatars.Avatars;
-using MultiplayerAvatars.Downloaders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MultiplayerAvatars.Providers;
 using Zenject;
 
 namespace MultiplayerAvatars.Installers
@@ -15,7 +10,7 @@ namespace MultiplayerAvatars.Installers
         {
             Plugin.Log?.Info("Injecting Dependencies");
             Container.BindInterfacesAndSelfTo<ModelSaber>().AsSingle();
-            Container.Bind(typeof(IInitializable), typeof(CustomAvatarManager)).To<CustomAvatarManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<CustomAvatarManager>().AsSingle();
         }
     }
 }

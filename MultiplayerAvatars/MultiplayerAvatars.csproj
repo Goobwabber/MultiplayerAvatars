@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>MultiplayerAvatars</AssemblyName>
-    <AssemblyVersion>0.0.0</AssemblyVersion>
+    <AssemblyVersion>0.0.3</AssemblyVersion>
     <TargetFramework>net472</TargetFramework>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
@@ -88,6 +88,10 @@
       <HintPath>$(BeatSaberDir)\Libs\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="SemVer">
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\SemVer.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SiraUtil">
       <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>

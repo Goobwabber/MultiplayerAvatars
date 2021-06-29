@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using MultiplayerAvatars.Avatars;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MultiplayerAvatars.Avatars
+namespace MultiplayerAvatars.Providers
 {
     public interface IAvatarProvider
     {
@@ -27,7 +25,6 @@ namespace MultiplayerAvatars.Avatars
         Task<string> HashAvatar(T avatar);
         Task<T?> FetchAvatarByHash(string hash, CancellationToken cancellationToken);
     }
-
 
     public class AvatarDownloadedEventArgs : EventArgs
     {
