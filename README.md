@@ -1,4 +1,4 @@
-# MultiplayerAvatars (PC Only) [![Build](https://github.com/Goobwabber/MultiplayerAvatars/workflows/Build/badge.svg?event=push)](https://github.com/Goobwabber/MultiplayerAvatars/actions?query=workflow%3ABuild)
+# MultiplayerAvatars ![Steam/PC-Only](https://goobi.moe/badges/api/v2/text?text=Steam/PC-Only&widthPadding=-80) [![Build](https://github.com/Goobwabber/MultiplayerAvatars/workflows/Build/badge.svg?event=push)](https://github.com/Goobwabber/MultiplayerAvatars/actions?query=workflow%3ABuild)
 A Beat Saber mod that adds [CustomAvatars](https://github.com/nicoco007/BeatSaberCustomAvatars) support to the [MultiplayerExtensions](https://github.com/Goobwabber/MultiplayerExtensions) mod. **This is a work in progress which has bugs.**
 
 ## Features
