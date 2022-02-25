@@ -91,7 +91,7 @@ namespace MultiplayerAvatars.HarmonyPatches
             {
                 patch.RemovePatch();
             }
-            Harmony.UnpatchAll(HarmonyId);
+            Harmony.UnpatchSelf();
         }
 
 
