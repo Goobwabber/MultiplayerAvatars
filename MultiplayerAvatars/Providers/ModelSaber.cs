@@ -65,7 +65,12 @@ namespace MultiplayerAvatars.Providers
                 {
                     Plugin.Log.Debug("Received response from ModelSaber...");
                     string content = await response.Content.ReadAsStringAsync();
-                    avatarInfo = JsonConvert.DeserializeObject<Dictionary<string, AvatarInfo>>(content).First().Value;
+                    Dictionary<string, AvatarInfo> avatars = JsonConvert.DeserializeObject<Dictionary<string, AvatarInfo>>(content);
+                    if (avatars.Count() == 0)
+                    {
+                        return null;
+                    }
+                    avatarInfo = avatars.First().Value;
                 }
                 else
                 {
