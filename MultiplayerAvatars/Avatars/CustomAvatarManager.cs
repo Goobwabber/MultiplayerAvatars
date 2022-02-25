@@ -3,14 +3,14 @@ using Zenject;
 using CustomAvatar.Avatar;
 using CustomAvatar.Player;
 using System.Collections.Generic;
-using MultiplayerExtensions.Packets;
 using MultiplayerAvatars.Providers;
+using MultiplayerCore.Networking;
 
 namespace MultiplayerAvatars.Avatars
 {
     internal class CustomAvatarManager : IInitializable
     {
-        private readonly PacketManager _packetManager;
+        private readonly MpPacketSerializer _packetSerializer;
         private readonly PlayerAvatarManager _avatarManager;
         private readonly IMultiplayerSessionManager _sessionManager;
         private readonly IAvatarProvider<AvatarPrefab> _avatarProvider;
@@ -21,9 +21,9 @@ namespace MultiplayerAvatars.Avatars
         public Action<IConnectedPlayer, CustomAvatarData>? avatarReceived;
         private readonly Dictionary<string, CustomAvatarData> _avatars = new Dictionary<string, CustomAvatarData>();
 
-        internal CustomAvatarManager(PacketManager packetManager, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<AvatarPrefab> avatarProvider)
+        internal CustomAvatarManager(MpPacketSerializer packetSerializer, PlayerAvatarManager avatarManager, IMultiplayerSessionManager sessionManager, IAvatarProvider<AvatarPrefab> avatarProvider)
         {
-            _packetManager = packetManager;
+            _packetSerializer = packetSerializer;
             _avatarManager = avatarManager;
             _sessionManager = sessionManager;
             _avatarProvider = avatarProvider;
@@ -37,7 +37,7 @@ namespace MultiplayerAvatars.Avatars
             _avatarManager.avatarChanged += OnAvatarChanged;
 
             _sessionManager.playerConnectedEvent += OnPlayerConnected;
-            _packetManager.RegisterCallback<CustomAvatarPacket>(HandleAvatarPacket);
+            _packetSerializer.RegisterCallback<CustomAvatarPacket>(HandleAvatarPacket);
 
             OnAvatarChanged(_avatarManager.currentlySpawnedAvatar);
         }
@@ -69,7 +69,7 @@ namespace MultiplayerAvatars.Avatars
         private void OnPlayerConnected(IConnectedPlayer player)
         {
             CustomAvatarPacket localAvatarPacket = localAvatar.GetPacket();
-            _packetManager.Send(localAvatarPacket);
+            _sessionManager.Send(localAvatarPacket);
         }
 
         private void HandleAvatarPacket(CustomAvatarPacket packet, IConnectedPlayer player)

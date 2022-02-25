@@ -79,10 +79,8 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MultiplayerExtensions">
-      <HintPath>$(BeatSaberDir)\Plugins\MultiplayerExtensions.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MultiplayerCore">
+      <HintPath>$(BeatSaberDir)\Plugins\MultiplayerCore.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\netstandard.dll</HintPath>
