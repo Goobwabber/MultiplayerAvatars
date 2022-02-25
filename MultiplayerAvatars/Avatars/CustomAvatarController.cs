@@ -31,9 +31,15 @@ namespace MultiplayerAvatars.Avatars
 
         public virtual void Start()
         {
+            _customAvatarManager.avatarReceived -= OnAvatarReceived;
             _customAvatarManager.avatarReceived += OnAvatarReceived;
 
             TryGetPoseController();
+        }
+
+        public virtual void Stop()
+        {
+            _customAvatarManager.avatarReceived -= OnAvatarReceived;
         }
 
         public virtual void Update()
