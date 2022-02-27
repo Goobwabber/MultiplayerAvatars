@@ -49,7 +49,6 @@ namespace MultiplayerAvatars
             Log = logger;
             
             zenjector.Install<AvatarInstaller>(Location.App);
-            zenjector.Install<GameAvatarInstaller>(Location.MultiplayerCore);
 
             HttpClient = new HttpClient();
             HttpClient.DefaultRequestHeaders.Add("User-Agent", Plugin.UserAgent);
