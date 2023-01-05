@@ -35,7 +35,7 @@ namespace MultiplayerAvatars
 		{
             get
 			{
-                var modVersion = PluginMetadata.Version.ToString();
+                var modVersion = PluginMetadata.HVersion.ToString();
                 var bsVersion = IPA.Utilities.UnityGame.GameVersion.ToString();
                 return $"MultiplayerAvatars/{modVersion} (BeatSaber/{bsVersion})";
 			}
@@ -48,8 +48,7 @@ namespace MultiplayerAvatars
             PluginMetadata = pluginMetadata;
             Log = logger;
             
-            zenjector.OnApp<AvatarInstaller>();
-            zenjector.OnGame<GameAvatarInstaller>().OnlyForMultiplayer();
+            zenjector.Install<AvatarInstaller>(Location.App);
 
             HttpClient = new HttpClient();
             HttpClient.DefaultRequestHeaders.Add("User-Agent", Plugin.UserAgent);
@@ -80,9 +79,9 @@ namespace MultiplayerAvatars
                 Log?.Debug($"Latest version is {latest}, released on {latest.ReleaseDate.ToShortDateString()}");
                 if (PluginMetadata != null)
                 {
-                    SemVer.Version currentVer = PluginMetadata.Version;
-                    SemVer.Version latestVersion = new SemVer.Version(latest.ToString());
-                    bool updateAvailable = new SemVer.Range($">{currentVer}").IsSatisfied(latestVersion);
+                    Hive.Versioning.Version currentVer = PluginMetadata.HVersion;
+                    Hive.Versioning.Version latestVersion = new Hive.Versioning.Version(latest.ToString());
+                    bool updateAvailable = new Hive.Versioning.VersionRange($">{currentVer}").Matches(latestVersion);
                     if (updateAvailable)
                     {
                         Log?.Info($"An update is available!\nNew mod version: {latestVersion}\nCurrent mod version: {currentVer}");

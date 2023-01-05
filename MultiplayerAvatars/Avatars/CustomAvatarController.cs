@@ -31,9 +31,15 @@ namespace MultiplayerAvatars.Avatars
 
         public virtual void Start()
         {
+            _customAvatarManager.avatarReceived -= OnAvatarReceived;
             _customAvatarManager.avatarReceived += OnAvatarReceived;
 
             TryGetPoseController();
+        }
+
+        public virtual void Stop()
+        {
+            _customAvatarManager.avatarReceived -= OnAvatarReceived;
         }
 
         public virtual void Update()
@@ -84,12 +90,14 @@ namespace MultiplayerAvatars.Avatars
         {
             _ = avatarData ?? throw new InvalidOperationException("avatarData is not loaded.");
             _ = poseController ?? throw new InvalidOperationException("Pose controller is not loaded.");
+            _ = _avatarSpawner ?? throw new InvalidOperationException("_avatarSpawner is not loaded.");
 
             loadedAvatar = avatar;
             if (spawnedAvatar != null)
                 Destroy(spawnedAvatar);
 
-            spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, new MultiplayerAvatarInput(poseController, transform.name != "MultiplayerLobbyAvatar(Clone)"), poseController.transform);
+            spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, new MultiplayerAvatarInput(poseController, false /* transform.name != "MultiplayerLobbyAvatar(Clone)" */), poseController.transform);
+            _ = spawnedAvatar ?? throw new InvalidOperationException("Spawned avatar is null.");
             spawnedAvatar.GetComponent<AvatarIK>().isLocomotionEnabled = true;
             spawnedAvatar.scale = avatarData.scale;
         }

@@ -27,6 +27,7 @@ namespace MultiplayerAvatars.HarmonyPatches
         static HarmonyManager()
         {
             AddDefaultPatch<LobbyAvatarPatch>();
+            AddDefaultPatch<GameAvatarPatch>();
         }
 
         private static void AddDefaultPatch<T>() where T : class
@@ -91,7 +92,7 @@ namespace MultiplayerAvatars.HarmonyPatches
             {
                 patch.RemovePatch();
             }
-            Harmony.UnpatchAll(HarmonyId);
+            Harmony.UnpatchSelf();
         }
 
 
