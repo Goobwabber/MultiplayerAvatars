@@ -11,7 +11,7 @@ using Zenject;
 
 namespace MultiplayerAvatars.Avatars
 {
-    internal class CustomAvatarController : MonoBehaviour, IInitializable, IDisposable
+    internal class CustomAvatarController : MonoBehaviour
     {
 
         private CustomAvatarPacket _avatarPacket = new();
@@ -45,13 +45,14 @@ namespace MultiplayerAvatars.Avatars
             _avatarInput = new MultiplayerAvatarInput(poseController, !transform.name.Contains("MultiplayerLobbyAvatar"));
         }
 
-        public void Initialize()
+        public void OnEnable()
         {
             _customAvatarManager.avatarReceived += HandleAvatarReceived;
             _avatarPacket = _customAvatarManager.GetPlayerAvatarPacket(_connectedPlayer.userId);
+            HandleAvatarReceived(_connectedPlayer, _avatarPacket);
         }
 
-        public void Dispose()
+        public void OnDisable()
         {
             _customAvatarManager.avatarReceived -= HandleAvatarReceived;
         }
@@ -64,15 +65,15 @@ namespace MultiplayerAvatars.Avatars
                 return;
 
             _avatarPacket = packet;
-            Task.Run(LoadAvatar);
+            _ = LoadAvatar(packet.Hash); // We need this to run on the main thread
         }
 
-        private async Task LoadAvatar()
+        private async Task LoadAvatar(string hash)
         {
-            var avatarPrefab = await _avatarProvider.GetAvatarByHash(_avatarPacket.Hash, CancellationToken.None);
+            var avatarPrefab = await _avatarProvider.GetAvatarByHash(hash, CancellationToken.None);
             if (avatarPrefab == null)
             {
-                _logger.Warn($"Tried to load avatar and failed: {_avatarPacket.Hash}");
+                _logger.Warn($"Tried to load avatar and failed: {hash}");
                 return;
             }
 

@@ -5,6 +5,7 @@ using MultiplayerCore.Networking;
 using SiraUtil.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Zenject;
 
 namespace MultiplayerAvatars.Networking
@@ -43,6 +44,9 @@ namespace MultiplayerAvatars.Networking
             _sessionManager.playerConnectedEvent += HandlePlayerConnected;
             _sessionManager.playerDisconnectedEvent += HandlePlayerDisconnected;
 
+            Task.Run(() => UpdateAvatarHash(_playerAvatarManager.currentlySpawnedAvatar.prefab.fullPath));
+            _localPlayerAvatar.Scale = _playerAvatarManager.currentlySpawnedAvatar?.scale ?? 1f;
+
             _packetSerializer.RegisterCallback<CustomAvatarPacket>(HandleCustomAvatarPacket);
         }
 
@@ -72,15 +76,7 @@ namespace MultiplayerAvatars.Networking
                 return;
             }
 
-            var hash = _customAvatarsProvider.GetCachedAvatarHash(avatar.prefab.fullPath);
-            if (hash == null)
-            {
-                _logger.Warn($"Local player switched to an avatar that was not hashed: {avatar.prefab.fullPath}");
-                return;
-            }
-
-            _localPlayerAvatar.Hash = hash;
-            _sessionManager.Send(_localPlayerAvatar);
+            Task.Run(() => UpdateAvatarHash(avatar.prefab.fullPath));
         }
 
         private void HandleAvatarScaleChanged(float scale)
@@ -104,6 +100,19 @@ namespace MultiplayerAvatars.Networking
         private void HandlePlayerDisconnected(IConnectedPlayer player)
         {
             _connectedPlayerAvatars.Remove(player.userId);
+        }
+
+        private async Task UpdateAvatarHash(string path)
+        {
+            var hash = await _customAvatarsProvider.GetAvatarHash(path);
+            if (hash == null)
+            {
+                _logger.Warn($"Local player switched to an avatar that was not hashed: {path}");
+                return;
+            }
+
+            _localPlayerAvatar.Hash = hash;
+            _sessionManager.Send(_localPlayerAvatar);
         }
     }
 }

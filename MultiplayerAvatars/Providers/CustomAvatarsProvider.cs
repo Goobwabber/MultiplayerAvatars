@@ -2,6 +2,7 @@
 using CustomAvatar.Player;
 using MultiplayerAvatars.Providers.Abstractions;
 using MultiplayerAvatars.Providers.Attributes;
+using SiraUtil.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,28 +18,44 @@ namespace MultiplayerAvatars.Providers
     {
         public string CustomAvatarsPath = PlayerAvatarManager.kCustomAvatarsPath;
 
-        private Task _updateAvatarHashes => Task.Run(UpdateAvatarHashes);
+        private readonly Task _updateAvatarHashes;
         private Dictionary<string, string> _cachedAvatarPaths = new();
         private Dictionary<string, string> _cachedAvatarHashes = new();
 
         private readonly AvatarLoader _avatarLoader;
+        private readonly SiraLog _logger;
 
         public CustomAvatarsProvider(
-            AvatarLoader avatarLoader)
+            AvatarLoader avatarLoader,
+            SiraLog logger)
         {
             _avatarLoader = avatarLoader;
+            _logger = logger;
+
+            _updateAvatarHashes = Task.Run(UpdateAvatarHashes);
         }
 
         public async Task<AvatarPrefab?> GetAvatarByHash(string hash, CancellationToken cancellationToken)
         {
-            await _updateAvatarHashes.ConfigureAwait(false);
-            if (!_cachedAvatarPaths.TryGetValue(hash, out string path))
-                return null;
-            return await _avatarLoader.LoadFromFileAsync(path, null, cancellationToken);
+            try
+            {
+                await _updateAvatarHashes.ConfigureAwait(false);
+                if (!_cachedAvatarPaths.TryGetValue(hash, out string path))
+                    return null;
+
+                return await _avatarLoader.LoadFromFileAsync(path, null, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error loading avatar '{hash}': {ex.Message}");
+                _logger.Debug(ex);
+            }
+            return null;
         }
 
-        public string? GetCachedAvatarHash(string path)
+        public async Task<string?> GetAvatarHash(string path)
         {
+            await _updateAvatarHashes.ConfigureAwait(false);
             if (!_cachedAvatarHashes.ContainsKey(path))
                 return null;
             return _cachedAvatarHashes[path];
