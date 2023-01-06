@@ -26,6 +26,7 @@ jobs:
       uses: Goobwabber/download-beatmods-deps@1.1
       with:
         manifest: ./MultiplayerAvatars/manifest.json
+        aliases: '{"CustomAvatar": "Custom Avatars"}'
     - name: Build
       id: Build
       env: 
