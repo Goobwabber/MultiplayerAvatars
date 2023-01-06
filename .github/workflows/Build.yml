@@ -23,7 +23,7 @@ jobs:
         manifest: ./MultiplayerAvatars/manifest.json
         sira-server-code: ${{ secrets.SIRA_SERVER_CODE }}
     - name: Fetch Mod References
-      uses: Goobwabber/download-beatmods-deps@1.1
+      uses: Goobwabber/download-beatmods-deps@1.2
       with:
         manifest: ./MultiplayerAvatars/manifest.json
         aliases: '{"CustomAvatar": "Custom Avatars"}'
