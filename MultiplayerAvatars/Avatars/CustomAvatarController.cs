@@ -1,97 +1,93 @@
 ﻿using CustomAvatar.Avatar;
+using MultiplayerAvatars.Networking;
 using MultiplayerAvatars.Providers;
+using SiraUtil.Logging;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
 namespace MultiplayerAvatars.Avatars
 {
-    internal class CustomAvatarController : MonoBehaviour
+    internal class CustomAvatarController : MonoBehaviour, IInitializable, IDisposable
     {
-        private AvatarSpawner _avatarSpawner = null!;
-        protected IConnectedPlayer _connectedPlayer = null!;
-        private CustomAvatarManager _customAvatarManager = null!;
-        private IAvatarProvider<AvatarPrefab> _avatarProvider = null!;
 
-        private CustomAvatarData? avatarData;
-        private AvatarPrefab? loadedAvatar;
-        private SpawnedAvatar? spawnedAvatar;
-        private AvatarPoseController? poseController;
+        private CustomAvatarPacket _avatarPacket = new();
+        private AvatarPrefab? _loadedAvatar;
+        private SpawnedAvatar? _spawnedAvatar;
+
+        private AvatarSpawner _avatarSpawner = null!;
+        private IConnectedPlayer _connectedPlayer = null!;
+        private CustomAvatarManager _customAvatarManager = null!;
+        private AvatarProviderService _avatarProvider = null!;
+        private AvatarPoseController _poseController = null!;
+        private MultiplayerAvatarInput _avatarInput = null!;
+        private SiraLog _logger = null!;
 
         [Inject]
-        public void Construct(AvatarSpawner avatarSpawner, IAvatarProvider<AvatarPrefab> avatarProvider, [InjectOptional] IConnectedPlayer connectedPlayer, CustomAvatarManager customAvatarManager)
+        public void Construct(
+            AvatarSpawner avatarSpawner,
+            IConnectedPlayer connectedPlayer,
+            CustomAvatarManager customAvatarManager,
+            AvatarProviderService avatarProvider,
+            AvatarPoseController poseController,
+            SiraLog logger)
         {
             _avatarSpawner = avatarSpawner;
             _avatarProvider = avatarProvider;
             _connectedPlayer = connectedPlayer;
             _customAvatarManager = customAvatarManager;
+            _poseController = poseController;
+            _logger = logger;
+
+            _avatarInput = new MultiplayerAvatarInput(poseController, !transform.name.Contains("MultiplayerLobbyAvatar"));
         }
 
-        public virtual void Start()
+        public void Initialize()
         {
-            _customAvatarManager.avatarReceived += OnAvatarReceived;
-
-            TryGetPoseController();
+            _customAvatarManager.avatarReceived += HandleAvatarReceived;
+            _avatarPacket = _customAvatarManager.GetPlayerAvatarPacket(_connectedPlayer.userId);
         }
 
-        public virtual void Update()
+        public void Dispose()
         {
-            if (poseController == null)
-            {
-                TryGetPoseController();
-            }
+            _customAvatarManager.avatarReceived -= HandleAvatarReceived;
         }
 
-        public void TryGetPoseController()
-        {
-            var poseControllers = gameObject.GetComponentsInChildren<AvatarPoseController>();
-            if (poseControllers.Length != 0)
-            {
-                poseController = poseControllers.First();
-                CustomAvatarData? avatar = _customAvatarManager.GetAvatarByUserId(_connectedPlayer.userId);
-                if (avatar != null)
-                    OnAvatarReceived(_connectedPlayer, avatar);
-            }
-        }
-
-        private void OnAvatarReceived(IConnectedPlayer player, CustomAvatarData avatar)
+        private void HandleAvatarReceived(IConnectedPlayer player, CustomAvatarPacket packet)
         {
             if (player.userId != _connectedPlayer.userId)
                 return;
-
-            if (avatar == null)
+            if (packet.Hash == "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
                 return;
 
-            if (avatar.hash == new CustomAvatarData().hash)
-                return;
+            _avatarPacket = packet;
+            Task.Run(LoadAvatar);
+        }
 
-            avatarData = avatar;
-            _avatarProvider.FetchAvatarByHash(avatar.hash, CancellationToken.None).ContinueWith(a =>
+        private async Task LoadAvatar()
+        {
+            var avatarPrefab = await _avatarProvider.GetAvatarByHash(_avatarPacket.Hash, CancellationToken.None);
+            if (avatarPrefab == null)
             {
-                if (!a.IsFaulted && a.Result is AvatarPrefab)
-                {
-                    HMMainThreadDispatcher.instance.Enqueue(() =>
-                    {
-                        CreateAvatar(a.Result);
-                    });
-                }
-            });
+                _logger.Warn($"Tried to load avatar and failed: {_avatarPacket.Hash}");
+                return;
+            }
+
+            HMMainThreadDispatcher.instance.Enqueue(() => CreateAvatar(avatarPrefab));
         }
 
         private void CreateAvatar(AvatarPrefab avatar)
         {
-            _ = avatarData ?? throw new InvalidOperationException("avatarData is not loaded.");
-            _ = poseController ?? throw new InvalidOperationException("Pose controller is not loaded.");
+            _loadedAvatar = avatar;
+            if (_spawnedAvatar != null)
+                Destroy(_spawnedAvatar);
 
-            loadedAvatar = avatar;
-            if (spawnedAvatar != null)
-                Destroy(spawnedAvatar);
-
-            spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, new MultiplayerAvatarInput(poseController, transform.name != "MultiplayerLobbyAvatar(Clone)"), poseController.transform);
-            spawnedAvatar.GetComponent<AvatarIK>().isLocomotionEnabled = true;
-            spawnedAvatar.scale = avatarData.scale;
+            _spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, _avatarInput, _poseController.transform);
+            _spawnedAvatar.GetComponent<AvatarIK>().isLocomotionEnabled = true;
+            _spawnedAvatar.scale = _avatarPacket.Scale;
         }
     }
 }

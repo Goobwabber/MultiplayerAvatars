@@ -2,10 +2,11 @@ name: Pull Request Build
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths:
+      - 'MultiplayerAvatars.sln'
       - 'MultiplayerAvatars/**'
-      - 'MultiplayerAvatarsTests/**'
+      - '.github/workflows/PR_Build.yml'
 
 jobs:
   Build:
@@ -15,18 +16,16 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
-    - name: GetStrippedRefs
-      env:
-        FILES_URL: ${{ secrets.BSFILES_URL }}
-      run: wget --no-check-certificate "$FILES_URL" -q -O bsfiles.zip
-    - name: ExtractRefs
-      run: unzip -q -n bsfiles.zip -d ./Refs
-    - name: Download Mod Dependencies
-      uses: Goobwabber/download-beatmods-deps@1.2
+        dotnet-version: 5.0.x
+    - name: Fetch SIRA References
+      uses: ProjectSIRA/download-sira-stripped@1.0.0
       with:
         manifest: ./MultiplayerAvatars/manifest.json
-        aliases: '{"CustomAvatar": "Custom Avatars"}'
+        sira-server-code: ${{ secrets.SIRA_SERVER_CODE }}
+    - name: Fetch Mod References
+      uses: Goobwabber/download-beatmods-deps@1.1
+      with:
+        manifest: ./MultiplayerAvatars/manifest.json
     - name: Build
       id: Build
       env: 
@@ -44,26 +43,3 @@ jobs:
       with:
         name: ${{ steps.Build.outputs.filename }}
         path: ${{ steps.Build.outputs.artifactpath }}
-  Test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: GetStrippedRefs
-      env:
-        FILES_URL: ${{ secrets.BSFILES_URL }}
-      run: wget --no-check-certificate "$FILES_URL" -q -O bsfiles.zip
-    - name: ExtractRefs
-      run: unzip -q -n bsfiles.zip -d ./Refs
-    - name: Download Mod Dependencies
-      uses: Goobwabber/download-beatmods-deps@1.1
-      with:
-        manifest: ./MultiplayerAvatars/manifest.json
-    - name: Test
-      id: Test
-      env: 
-        FrameworkPathOverride: /usr/lib/mono/4.8-api
-      run: dotnet test --logger GitHubActions
