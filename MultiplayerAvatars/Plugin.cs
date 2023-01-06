@@ -32,6 +32,7 @@ namespace MultiplayerAvatars
             zenjector.UseSiraSync(SiraUtil.Web.SiraSync.SiraSyncServiceType.GitHub, "Goobwabber", "MultiplayerAvatars");
             zenjector.Install<MpavAppInstaller>(Location.App);
             zenjector.Install<MpavLobbyInstaller, MultiplayerLobbyInstaller>();
+            zenjector.Install<MpavGameInstaller>(Location.MultiplayerCore);
         }
 
         [OnEnable]

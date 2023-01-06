@@ -1,4 +1,5 @@
-﻿using MultiplayerAvatars.Providers;
+﻿using MultiplayerAvatars.Networking;
+using MultiplayerAvatars.Providers;
 using Zenject;
 
 namespace MultiplayerAvatars.Installers
@@ -10,6 +11,8 @@ namespace MultiplayerAvatars.Installers
             Container.BindInterfacesAndSelfTo<CustomAvatarsProvider>().AsSingle();
             Container.BindInterfacesAndSelfTo<ModelSaberProvider>().AsSingle();
             Container.Bind<AvatarProviderService>().ToSelf().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<CustomAvatarManager>().AsSingle();
         }
     }
 }
