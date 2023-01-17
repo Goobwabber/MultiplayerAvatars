@@ -45,7 +45,7 @@ namespace MultiplayerAvatars.Avatars
             _avatarInput = new MultiplayerAvatarInput(poseController);
         }
 
-        public void Start()
+        public void OnEnable()
         {
             _customAvatarManager.avatarReceived += HandleAvatarReceived;
             _avatarPacket = _customAvatarManager.GetPlayerAvatarPacket(_connectedPlayer.userId);
