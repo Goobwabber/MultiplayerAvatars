@@ -18,7 +18,7 @@ namespace MultiplayerAvatars.Avatars
         private Pose rightHand = new Pose();
         private Pose leftHand = new Pose();
 
-        internal MultiplayerAvatarInput(AvatarPoseController poseController, bool handsEnabled = false)
+        internal MultiplayerAvatarInput(AvatarPoseController poseController)
         {
             _poseController = poseController;
 
@@ -28,12 +28,15 @@ namespace MultiplayerAvatars.Avatars
             leftHandTransform = _poseController.GetField<Transform, AvatarPoseController>("_leftHandTransform");
             bodyTransform = _poseController.GetField<Transform, AvatarPoseController>("_bodyTransform");
 
-            headTransform.gameObject.SetActive(false);
-            bodyTransform.gameObject.SetActive(false);
-            rightHandTransform.gameObject.SetActive(handsEnabled);
-            leftHandTransform.gameObject.SetActive(handsEnabled);
-            rightHandTransform.Find("hand")?.gameObject.SetActive(handsEnabled);
-            leftHandTransform.Find("hand")?.gameObject.SetActive(handsEnabled);
+            SetEnabled(true);
+        }
+
+        public void SetEnabled(bool enabled)
+        {
+            headTransform.gameObject.SetActive(!enabled);
+            bodyTransform.gameObject.SetActive(!enabled);
+            rightHandTransform.Find("Hand").gameObject.SetActive(!enabled);
+            leftHandTransform.Find("Hand").gameObject.SetActive(!enabled);
         }
 
         private void OnInputChanged(Vector3 newHeadPosition)
@@ -44,6 +47,15 @@ namespace MultiplayerAvatars.Avatars
             rightHand.rotation = rightHandTransform.localRotation;
             leftHand.position = leftHandTransform.localPosition;
             leftHand.rotation = leftHandTransform.localRotation;
+
+            if (rightHand.position == head.position)
+                rightHand.position += Vector3.one * 0.1f;
+            if (rightHand.rotation == head.rotation)
+                rightHand.rotation *= Quaternion.identity;
+            if (leftHand.position == head.position)
+                leftHand.position += Vector3.one * -0.1f;
+            if (leftHand.rotation == head.rotation)
+                leftHand.rotation *= Quaternion.identity;
         }
 
         public bool allowMaintainPelvisPosition => true;

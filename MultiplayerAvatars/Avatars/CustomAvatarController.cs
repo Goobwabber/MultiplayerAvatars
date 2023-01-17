@@ -1,4 +1,4 @@
-﻿using CustomAvatar.Avatar;
+using CustomAvatar.Avatar;
 using MultiplayerAvatars.Networking;
 using MultiplayerAvatars.Providers;
 using SiraUtil.Logging;
@@ -11,7 +11,7 @@ using Zenject;
 
 namespace MultiplayerAvatars.Avatars
 {
-    internal class CustomAvatarController : MonoBehaviour, IInitializable, IDisposable
+    internal class CustomAvatarController : MonoBehaviour
     {
 
         private CustomAvatarPacket _avatarPacket = new();
@@ -42,16 +42,17 @@ namespace MultiplayerAvatars.Avatars
             _poseController = poseController;
             _logger = logger;
 
-            _avatarInput = new MultiplayerAvatarInput(poseController, !transform.name.Contains("MultiplayerLobbyAvatar"));
+            _avatarInput = new MultiplayerAvatarInput(poseController);
         }
 
-        public void Initialize()
+        public void Start()
         {
             _customAvatarManager.avatarReceived += HandleAvatarReceived;
             _avatarPacket = _customAvatarManager.GetPlayerAvatarPacket(_connectedPlayer.userId);
+            HandleAvatarReceived(_connectedPlayer, _avatarPacket);
         }
 
-        public void Dispose()
+        public void OnDisable()
         {
             _customAvatarManager.avatarReceived -= HandleAvatarReceived;
         }
@@ -64,15 +65,15 @@ namespace MultiplayerAvatars.Avatars
                 return;
 
             _avatarPacket = packet;
-            Task.Run(LoadAvatar);
+            _ = LoadAvatar(packet.Hash); // We need this to run on the main thread
         }
 
-        private async Task LoadAvatar()
+        private async Task LoadAvatar(string hash)
         {
-            var avatarPrefab = await _avatarProvider.GetAvatarByHash(_avatarPacket.Hash, CancellationToken.None);
+            var avatarPrefab = await _avatarProvider.GetAvatarByHash(hash, CancellationToken.None);
             if (avatarPrefab == null)
             {
-                _logger.Warn($"Tried to load avatar and failed: {_avatarPacket.Hash}");
+                _logger.Warn($"Tried to load avatar and failed: {hash}");
                 return;
             }
 
@@ -86,7 +87,10 @@ namespace MultiplayerAvatars.Avatars
                 Destroy(_spawnedAvatar);
 
             _spawnedAvatar = _avatarSpawner.SpawnAvatar(avatar, _avatarInput, _poseController.transform);
-            _spawnedAvatar.GetComponent<AvatarIK>().isLocomotionEnabled = true;
+            _avatarInput.SetEnabled(true);
+            var avatarIk = _spawnedAvatar.GetComponent<AvatarIK>();
+            if (avatarIk != null)
+                avatarIk.isLocomotionEnabled = true;
             _spawnedAvatar.scale = _avatarPacket.Scale;
         }
     }

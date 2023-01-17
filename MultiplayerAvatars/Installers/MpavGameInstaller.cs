@@ -1,6 +1,7 @@
 ﻿using MultiplayerAvatars.Avatars;
 using SiraUtil.Extras;
 using SiraUtil.Objects.Multiplayer;
+using UnityEngine;
 using Zenject;
 
 namespace MultiplayerAvatars.Installers
@@ -16,6 +17,7 @@ namespace MultiplayerAvatars.Installers
         private MultiplayerConnectedPlayerFacade DecorateConnectedPlayerFacade(MultiplayerConnectedPlayerFacade original)
         {
             original.GetComponentInChildren<MultiplayerAvatarPoseController>().gameObject.AddComponent<CustomAvatarController>();
+            GameObject.Destroy(original.GetComponentInChildren<AvatarPoseController>().gameObject.GetComponent<Animator>());
             return original;
         }
     }

@@ -17,8 +17,10 @@
     <Nullable>enable</Nullable>
     <VersionType>Unofficial</VersionType>
     <CommitHash>local</CommitHash>
-    <GitBranch></GitBranch>
-    <GitModified></GitModified>
+    <GitBranch>
+    </GitBranch>
+    <GitModified>
+    </GitModified>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
@@ -131,6 +133,11 @@
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>

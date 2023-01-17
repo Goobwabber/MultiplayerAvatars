@@ -15,7 +15,6 @@ namespace MultiplayerAvatars.Installers
         private MultiplayerLobbyAvatarController DecorateAvatar(MultiplayerLobbyAvatarController original)
         {
             original.gameObject.AddComponent<CustomAvatarController>();
-
             return original;
         }
     }

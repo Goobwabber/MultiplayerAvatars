@@ -39,7 +39,7 @@ namespace MultiplayerAvatars.Providers.ModelSaber
         public string Discord { get; set; } = string.Empty;
 
         [JsonProperty("variationid")]
-        public int VariationID { get; set; }
+        public int? VariationID { get; set; }
 
         [JsonProperty("platform")]
         public string Platform { get; set; } = string.Empty;
